@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inscripción a Cursos</title>
+    <style>
+        table, th, td {
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+            padding: 8px;
+        }
+        button:disabled {
+            background-color: #ccc;
+            color: #666;
+        }
+        small {
+            color: #555;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Inscripción a Cursos</h2>
+
+<label>ID del Alumno: <input type="number" id="alumnoId" value="1"></label>
+<button onclick="solicitarCursos()">Ver cursos disponibles</button>
+
+<h3>Cursos Disponibles</h3>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre y Alumnos</th>
+        <th>Capacidad</th>
+        <th>Inscritos</th>
+        <th>Acción</th>
+    </tr>
+    </thead>
+    <tbody id="tablaCursos"></tbody>
+</table>
+<!--<script>-->
+<!--    const ws = new WebSocket('ws://localhost:8080');-->
+
+<!--    ws.onopen = () => {-->
+<!--        console.log("Conectado al servidor WebSocket");-->
+<!--        cargarCursos();-->
+<!--    };-->
+
+<!--    ws.onmessage = (event) => {-->
+<!--        const data = JSON.parse(event.data);-->
+<!--        if (data.action === 'cursos') {-->
+<!--            mostrarCursos(data.cursos);-->
+<!--        }-->
+<!--        if (data.action === 'refresh') {-->
+<!--            cargarCursos();-->
+<!--        }-->
+<!--    };-->
+
+<!--    function cargarCursos() {-->
+<!--        ws.send(JSON.stringify({ action: 'getCursos' }));-->
+<!--    }-->
+
+<!--    function mostrarCursos(cursos) {-->
+<!--        const alumnoId = parseInt(document.getElementById('alumnoIdInput').value);-->
+<!--        const tbody = document.querySelector('#tablaCursos tbody');-->
+<!--        tbody.innerHTML = '';-->
+
+<!--        cursos.forEach(curso => {-->
+<!--            const inscritos = curso.alumnos || []; // array de objetos {id, nombre}-->
+<!--            const alumnoInscrito = inscritos.some(a => a.id === alumnoId);-->
+<!--            const cupoLleno = inscritos.length >= curso.capacidad;-->
+
+<!--            const tr = document.createElement('tr');-->
+<!--            tr.innerHTML = `-->
+<!--          <td>${curso.id}</td>-->
+<!--          <td>-->
+<!--            ${curso.nombre}<br>-->
+<!--            Alumnos: ${inscritos.length > 0 ? inscritos.map(a => a.nombre).join(", ") : "Sin inscritos"}-->
+<!--          </td>-->
+<!--          <td>${curso.capacidad}</td>-->
+<!--          <td>${inscritos.length}</td>-->
+<!--          <td>-->
+<!--            ${-->
+<!--                alumnoInscrito-->
+<!--                    ? `<button onclick="eliminarInscripcion(${curso.id})">Eliminar inscripción</button>`-->
+<!--                    : cupoLleno-->
+<!--                        ? `<button disabled style="background: #ccc;">Curso lleno</button>`-->
+<!--                        : `<button onclick="inscribirse(${curso.id})">Inscribirse</button>`-->
+<!--            }-->
+<!--          </td>-->
+<!--        `;-->
+<!--            tbody.appendChild(tr);-->
+<!--        });-->
+<!--    }-->
+
+<!--    function inscribirse(cursoId) {-->
+<!--        const alumnoId = parseInt(document.getElementById('alumnoIdInput').value);-->
+<!--        ws.send(JSON.stringify({-->
+<!--            action: 'inscribirAlumno',-->
+<!--            alumnoId,-->
+<!--            cursoId-->
+<!--        }));-->
+<!--    }-->
+
+<!--    function eliminarInscripcion(cursoId) {-->
+<!--        const alumnoId = parseInt(document.getElementById('alumnoIdInput').value);-->
+<!--        ws.send(JSON.stringify({-->
+<!--            action: 'eliminarInscripcion',-->
+<!--            alumnoId,-->
+<!--            cursoId-->
+<!--        }));-->
+<!--    }-->
+<!--</script>-->
+
+<script>
+    let ws;
+
+    function conectarWebSocket() {
+        ws = new WebSocket("ws://localhost:8080");
+
+        ws.onopen = () => {
+            console.log("Conectado a WebSocket");
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log("Mensaje recibido:", data);
+
+            if (data.action === "cursos") {
+                mostrarCursos(data.cursos);
+            }
+            if (data.action === "inscripcionOK") {
+                alert("Inscripción realizada correctamente.");
+                solicitarCursos();
+            }
+            if (data.action === "cursoLleno") {
+                alert(`El curso ${data.curso} ya está lleno.`);
+                solicitarCursos();
+            }
+            if (data.action === "error") {
+                alert(data.mensaje);
+            }
+        };
+
+        ws.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+
+        ws.onclose = () => {
+            console.warn("WebSocket cerrado, intentando reconectar...");
+            setTimeout(conectarWebSocket, 2000);
+        };
+    }
+
+    function solicitarCursos() {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ action: "getCursos" }));
+        } else {
+            alert("WebSocket no conectado.");
+        }
+    }
+
+    function inscribir(idCurso) {
+        const alumnoId = document.getElementById("alumnoId").value;
+        if (!alumnoId) {
+            alert("Por favor ingresa un ID de alumno válido.");
+            return;
+        }
+
+        ws.send(JSON.stringify({
+            action: "inscribirAlumno",
+            id_alumno: alumnoId,
+            id_curso: idCurso
+        }));
+    }
+
+    function mostrarCursos(cursos) {
+        console.log("Cursos recibidos para mostrar:", cursos);
+        const tbody = document.getElementById("tablaCursos");
+        tbody.innerHTML = "";
+
+        cursos.forEach(curso => {
+            const tr = document.createElement("tr");
+
+            const alumnosLista = curso.alumnos && curso.alumnos.length > 0
+                ? curso.alumnos.map(a => a.nombre).join(", ")
+                : "Sin inscritos";
+
+            tr.innerHTML = `
+                <td>${curso.id}</td>
+                <td>${curso.nombre}<br><small>Alumnos: ${alumnosLista}</small></td>
+                <td>${curso.capacidad}</td>
+                <td>${curso.inscritos}</td>
+            `;
+
+            const tdAccion = document.createElement("td");
+            const boton = document.createElement("button");
+
+            if (curso.inscritos < curso.capacidad) {
+                boton.textContent = "Inscribirse";
+                boton.onclick = () => inscribir(curso.id);
+            } else {
+                boton.textContent = "Curso lleno";
+                boton.disabled = true;
+            }
+
+            tdAccion.appendChild(boton);
+            tr.appendChild(tdAccion);
+            tbody.appendChild(tr);
+        });
+    }
+
+    window.onload = conectarWebSocket;
+</script>
+
+</body>
+</html>

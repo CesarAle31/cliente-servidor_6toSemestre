@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inscripción a Cursos</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    h2 { margin-bottom: 10px; }
+    #mensaje { color: red; font-weight: bold; }
+    table { border-collapse: collapse; width: 60%; margin-bottom: 20px; }
+    th, td { border: 1px solid #aaa; padding: 8px; text-align: center; }
+    th { background: #f0f0f0; }
+    button { padding: 5px 12px; }
+  </style>
+</head>
+<body>
+<h2>Inscripción a Cursos</h2>
+<div>
+  <label for="alumnoId">ID del Alumno:</label>
+  <input type="number" id="alumnoId" min="1">
+  <button onclick="solicitarCursos()">Ver cursos disponibles</button>
+</div>
+<div id="mensaje"></div>
+<h3>Cursos Disponibles</h3>
+<table id="tablaCursos">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Nombre</th>
+    <th>Capacidad</th>
+    <th>Inscritos</th>
+    <th>Acción</th>
+  </tr>
+  </thead>
+  <tbody>
+  <!-- Se llenará dinámicamente -->
+  </tbody>
+</table>
+<script>
+  let socket;
+  let cursos = [];
+
+  function conectarSocket() {
+    socket = new WebSocket('ws://localhost:8080');
+    socket.onopen = () => console.log('Conectado al servidor de WebSocket para inscripciones');
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.action === 'cursos') {
+        cursos = data.cursos;
+        mostrarCursos(data.cursos);
+      }
+      if (data.action === 'inscripcionOK') {
+        document.getElementById('mensaje').textContent = 'Inscripción realizada con éxito.';
+        solicitarCursos();
+      }
+      if (data.action === 'cursoLleno') {
+        document.getElementById('mensaje').textContent = `El curso "${data.curso}" se ha llenado. No se permiten más inscripciones.`;
+      }
+      if (data.action === 'error') {
+        document.getElementById('mensaje').textContent = data.mensaje;
+      }
+    }
+    socket.onerror = (e) => {
+      document.getElementById('mensaje').textContent = "Error de conexión con el servidor.";
+    }
+  }
+
+  function solicitarCursos() {
+    document.getElementById('mensaje').textContent = '';
+    if (!socket || socket.readyState !== 1) conectarSocket();
+    // Un pequeño delay si conecta por primera vez
+    setTimeout(() => {
+      socket.send(JSON.stringify({action: 'getCursos'}));
+    }, 200);
+  }
+
+  function mostrarCursos(cursos) {
+    const tbody = document.querySelector('#tablaCursos tbody');
+    tbody.innerHTML = '';
+    cursos.forEach(curso => {
+      const inscritos = curso.inscritos || 0;
+      const lleno = inscritos >= curso.capacidad;
+      const btn = lleno ?
+              `<button disabled>Curso lleno</button>` :
+              `<button onclick="inscribir(${curso.id},'${curso.nombre}')">Inscribirse</button>`;
+      tbody.innerHTML += `
+                    <tr>
+                        <td>${curso.id}</td>
+                        <td>${curso.nombre}</td>
+                        <td>${curso.capacidad}</td>
+                        <td>${inscritos}</td>
+                        <td>${btn}</td>
+                    </tr>
+                `;
+    });
+  }
+
+  function inscribir(id_curso, nombreCurso) {
+    const id_alumno = document.getElementById('alumnoId').value;
+    if (!id_alumno) {
+      document.getElementById('mensaje').textContent = "Debes ingresar el ID del alumno.";
+      return;
+    }
+    document.getElementById('mensaje').textContent = '';
+    socket.send(JSON.stringify({
+      action: 'inscribirAlumno',
+      id_curso: id_curso,
+      id_alumno: id_alumno,
+      curso: nombreCurso
+    }));
+  }
+
+  // Conexión automática al cargar
+  conectarSocket();
+</script>
+</body>
+</html>

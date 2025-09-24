@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+    <title>Title</title>
+</head>
+<body>
+<div class="container mt-3">
+    <h2>Crear Nuevo Usuario</h2>
+
+    <form  action="enviar.php" method="POST">
+        <!--    <label for="nombre">Nombre:</label><br>-->
+        <!--    <input type="text" id="nombre" name="nombre" required><br><br>-->
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" >
+        </div>
+        <!--    <label for="correo">Correo:</label><br>-->
+        <!--    <input type="email" id="correo" name="correo" required><br><br>-->
+
+        <div class="mb-3">
+            <label for="correo" class="form-label">Correo</label>
+            <input type="email" class="form-control" id="correo" name="correo" placeholder="name@example.com">
+        </div>
+        <!--    <button type="submit">Enviar</button>-->
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">
+                Enviar</button>
+        </div>
+    </form>
+
+
+    <form  action="usuarios.html" >
+        <div  class="mb-3">
+            <button type="submit" class="btn btn-primary"> Regresar </button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ver Comandas</title>
+  <style>
+    table, th, td { border: 1px solid black; border-collapse: collapse; }
+    th, td { padding: 8px; }
+  </style>
+</head>
+<body>
+<h1>Listado de Comandas</h1>
+<label for="estado">Filtrar por estado:</label>
+<select id="estado" onchange="cargarComandas()">
+  <option value="">Todas</option>
+  <option value="abierta">Abierta</option>
+  <option value="cerrada">Cerrada</option>
+  <!-- Agrega más estados si los usas -->
+</select>
+<br><br>
+<table>
+  <thead>
+  <tr>
+    <th>Mesa</th>
+    <th>Mesero</th>
+    <th>Items</th>
+    <th>Estado</th>
+    <th>Fecha Creación</th>
+    <th>Total</th>
+    <th>Forma de Pago</th>
+    <th>Hora de Cierre</th>
+  </tr>
+  </thead>
+  <tbody id="comandas-body">
+  </tbody>
+</table>
+
+<script>
+  async function cargarComandas() {
+    const estado = document.getElementById('estado').value;
+    let url = 'http://localhost:3000/comandas';
+    if (estado) {
+      url += '?estado=' + encodeURIComponent(estado);
+    }
+    const response = await fetch(url);
+    const comandas = await response.json();
+    const tbody = document.getElementById('comandas-body');
+    tbody.innerHTML = '';
+    comandas.forEach(comanda => {
+      const items = comanda.items.map(item =>
+              `${item.nombre} (x${item.cantidad}${item.servido ? ', servido' : ''})`
+      ).join('<br>');
+      tbody.innerHTML += `
+                    <tr>
+                        <td>${comanda.mesa}</td>
+                        <td>${comanda.mesero}</td>
+                        <td>${items}</td>
+                        <td>${comanda.estado}</td>
+                        <td>${(new Date(comanda.fecha_creacion)).toLocaleString()}</td>
+                        <td>${comanda.total}</td>
+                        <td>${comanda.forma_pago}</td>
+                        <td>${comanda.hora_cierre ? (new Date(comanda.hora_cierre)).toLocaleString() : ''}</td>
+                    </tr>
+                `;
+    });
+  }
+
+  // Cargar al inicio
+  cargarComandas();
+</script>
+</body>
+</html>

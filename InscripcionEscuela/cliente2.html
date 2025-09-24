@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD de Alumnos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        table { border-collapse: collapse; width: 60%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #eee; }
+        input[type="text"], input[type="email"], input[type="password"] { width: 100%; padding: 5px; }
+        .form-container { max-width: 400px; margin-bottom: 20px; }
+        .actions button { margin-right: 5px; }
+    </style>
+</head>
+<body>
+<h1>CRUD de Alumnos</h1>
+
+<div class="form-container">
+    <h3 id="form-title">Agregar Alumno</h3>
+    <form id="alumno-form">
+        <input type="hidden" id="alumno-id">
+        <label>Nombre:<br><input type="text" id="nombre" required></label><br><br>
+        <label>Correo:<br><input type="email" id="correo" required></label><br><br>
+        <label>Usuario:<br><input type="text" id="usuario" required></label><br><br>
+        <label>Password:<br><input type="password" id="password" required></label><br><br>
+        <button type="submit" id="btn-submit">Agregar</button>
+        <button type="button" id="btn-cancel" style="display:none;">Cancelar</button>
+    </form>
+</div>
+
+<table id="alumnos-table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Correo</th>
+        <th>Usuario</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Los alumnos se cargarán aquí -->
+    </tbody>
+</table>
+
+<script>
+    // Cambia esto si tu WebSocket está en otro puerto/dominio
+    const ws = new WebSocket('ws://localhost:8080');
+
+    ws.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        if (data.type === 'alumnos') {
+            renderAlumnos(data.alumnos);
+        }
+    };
+
+    function renderAlumnos(alumnos) {
+        const tbody = document.querySelector("#alumnos-table tbody");
+        tbody.innerHTML = "";
+        alumnos.forEach(alumno => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                    <td>${alumno.id}</td>
+                    <td>${alumno.nombre}</td>
+                    <td>${alumno.correo}</td>
+                    <td>${alumno.usuario}</td>
+                    <td class="actions">
+                        <button onclick='editarAlumno(${JSON.stringify(alumno)})'>Editar</button>
+                        <button onclick="eliminarAlumno(${alumno.id})">Eliminar</button>
+                    </td>
+                `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Agregar o actualizar alumno
+    document.getElementById("alumno-form").onsubmit = function(e) {
+        e.preventDefault();
+        const id = document.getElementById("alumno-id").value;
+        const nombre = document.getElementById("nombre").value;
+        const correo = document.getElementById("correo").value;
+        const usuario = document.getElementById("usuario").value;
+        const password = document.getElementById("password").value;
+        const datos = { nombre, correo, usuario, password };
+        if (id) {
+            datos.id = parseInt(id);
+            ws.send(JSON.stringify({ type: "editAlumno", alumno: datos }));
+        } else {
+            ws.send(JSON.stringify({ type: "addAlumno", alumno: datos }));
+        }
+        this.reset();
+        document.getElementById("form-title").innerText = "Agregar Alumno";
+        document.getElementById("btn-submit").innerText = "Agregar";
+        document.getElementById("btn-cancel").style.display = "none";
+    };
+
+    // Editar alumno (llena el formulario)
+    window.editarAlumno = function(alumno) {
+        document.getElementById("alumno-id").value = alumno.id;
+        document.getElementById("nombre").value = alumno.nombre;
+        document.getElementById("correo").value = alumno.correo;
+        document.getElementById("usuario").value = alumno.usuario;
+        document.getElementById("password").value = alumno.password || "";
+        document.getElementById("form-title").innerText = "Editar Alumno";
+        document.getElementById("btn-submit").innerText = "Actualizar";
+        document.getElementById("btn-cancel").style.display = "inline";
+    };
+
+    // Cancelar edición
+    document.getElementById("btn-cancel").onclick = function() {
+        document.getElementById("alumno-form").reset();
+        document.getElementById("alumno-id").value = "";
+        document.getElementById("form-title").innerText = "Agregar Alumno";
+        document.getElementById("btn-submit").innerText = "Agregar";
+        this.style.display = "none";
+    };
+
+    // Eliminar alumno
+    window.eliminarAlumno = function(id) {
+        if (confirm("¿Seguro que desea eliminar este alumno?")) {
+            ws.send(JSON.stringify({ type: "deleteAlumno", id }));
+        }
+    };
+</script>
+</body>
+</html>

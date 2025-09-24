@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+    <title>Cliente</title>
+</head>
+<!--<body>-->
+
+<!--<div class="container col-md-6 offset-3">-->
+<!--    <br><br><h1>cliente</h1><br>-->
+<!--    <div class="form-floating mb-3">-->
+<!--        <input type="text" id="txtUsuario" class="form-control"-->
+<!--               id="floatingInput" placeholder="Usuario">-->
+<!--        <label for="floatingInput">Usuario</label>-->
+
+<!--        <div class="mb-3">-->
+<!--            <label for="exampleFormControlTextarea1" class="form-label"></label>-->
+<!--            <textarea class="form-control" id="txtMensaje" rows="3"-->
+<!--                      placeholder="Mensaje a enviar"></textarea>-->
+<!--        </div>-->
+
+
+<!--        <div class="mb-3">-->
+<!--            <button onclick="EnviarMensaje()" class="btn btn-primary">-->
+<!--                Enviar</button>-->
+<!--        </div>-->
+
+<!--        <br><br>-->
+
+<!--        <div class="mb-3">-->
+<!--            <ul class="list-group" id="chat">-->
+
+<!--            </ul>-->
+<!--        </div>-->
+
+<!--</div>-->
+
+<!--    <script> ws = new WebSocket("ws://localhost:9595");-->
+<!--    ws.onmessage = function(event) {-->
+<!--        const data = JSON.parse(event.data);-->
+<!--        const chat = document.getElementById("chat");-->
+<!--        const item = document.createElement("li");-->
+<!--        item.textContent = '${data.txtUsuario}:${data.txtMensaje}';-->
+<!--        chat.appendChild(item);-->
+<!--    };-->
+<!--    function EnviarMensaje(){-->
+<!--         const user = document.getElementById("txtUsuario").value;-->
+<!--         const msg = document.getElementById("txtMensaje").value;-->
+<!--        if (user && msg) {-->
+<!--        ws.send(JSON.stringify({user, msg}));-->
+<!--        document.getElementById("txtMensaje").value = "";-->
+<!--        }-->
+<!--    }-->
+<!--        </script>-->
+
+
+
+<!--</body>-->
+<body>
+<div class="container col-md-6 offset-3">
+    <br><br><h1>cliente</h1><br>
+    <div class="form-floating mb-3">
+        <input type="text" id="txtUsuario" class="form-control"
+               placeholder="Usuario">
+        <label for="txtUsuario">Usuario</label>
+        <div class="mb-3">
+            <label for="txtMensaje" class="form-label"></label>
+            <textarea class="form-control" id="txtMensaje" rows="3"
+                      placeholder="Mensaje a enviar"></textarea>
+        </div>
+        <div class="mb-3">
+            <button onclick="EnviarMensaje()" class="btn btn-primary">
+                Enviar</button>
+        </div>
+        <br><br>
+        <div class="mb-3">
+            <ul class="list-group" id="chat">
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+    const ws = new WebSocket("ws://localhost:9595");
+    ws.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        const chat = document.getElementById("chat");
+        const item = document.createElement("li");
+        item.textContent = data.usuario + ": " + data.mensaje;
+        chat.appendChild(item);
+    };
+    function EnviarMensaje(){
+        const user = document.getElementById("txtUsuario").value;
+        const msg = document.getElementById("txtMensaje").value;
+        if (user && msg) {
+            ws.send(JSON.stringify({usuario: user, mensaje: msg}));
+            document.getElementById("txtMensaje").value = "";
+        }
+    }
+</script>
+</body>
+</html>

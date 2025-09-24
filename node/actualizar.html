@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+    <title>Title</title>
+</head>
+<body>
+<div class="container mt-3">
+
+    <form id="miFormulario" action="enviar.php" method="POST">
+        <div class="mb-3">
+            <label for="update-id" class="form-label">ID</label>
+            <input type="text" class="form-control" id="update-id" name="id">
+        </div>
+
+        <div class="mb-3">
+            <label for="update-nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="update-nombre" name="nombre">
+        </div>
+
+        <div class="mb-3">
+            <label for="update-correo" class="form-label">Correo</label>
+            <input type="email" class="form-control" id="update-correo" name="correo" placeholder="name@example.com">
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+        </div>
+
+    <script>
+        document.getElementById('miFormulario').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('update-id').value;
+            const nombre = document.getElementById('update-nombre').value;
+            const correo = document.getElementById('update-correo').value;
+
+            if (!id || !nombre || !correo) {
+                alert('Todos los campos son obligatorios');
+                return;
+            }
+
+            const data = new FormData();
+            data.append('_method', 'PUT');
+            data.append('id', id);
+            data.append('nombre', nombre);
+            data.append('correo', correo);
+
+            fetch('enviar.php', {
+                method: 'POST',
+                body: data
+            })
+                .then(res => res.json())
+                .then(response => {
+                    console.log(response);
+                    alert('Usuario actualizado correctamente');
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('Hubo un error al actualizar');
+                });
+        });
+    </script>
+
+    </form>
+    <form  action="usuarios.html" >
+        <div  class="mb-3">
+            <button type="submit" class="btn btn-primary"> Regresar </button>
+        </div>
+    </form
+
+</div>
+</body>
+</html>

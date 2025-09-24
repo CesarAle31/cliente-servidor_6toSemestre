@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador del Sistema Solar 3D</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f23 100%);
+            overflow: hidden;
+            color: white;
+        }
+
+        #canvas {
+            display: block;
+            cursor: grab;
+        }
+
+        #canvas:active {
+            cursor: grabbing;
+        }
+
+        .ui-panel {
+            position: absolute;
+            background: rgba(0, 20, 40, 0.9);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .controls {
+            top: 20px;
+            left: 20px;
+            width: 280px;
+        }
+
+        .info-panel {
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .bottom-controls {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        h3 {
+            color: #64b5f6;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #b0bec5;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        button {
+            background: linear-gradient(45deg, #1976d2, #42a5f5);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #1565c0, #1e88e5);
+            transform: translateY(-1px);
+        }
+
+        .planet-button {
+            margin: 2px;
+            padding: 6px 12px;
+            font-size: 11px;
+        }
+
+        .info-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            border-left: 3px solid #64b5f6;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #81c784;
+            font-size: 11px;
+        }
+
+        .info-value {
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .speed-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .orbital-trail {
+            stroke: rgba(100, 181, 246, 0.3);
+            stroke-width: 1;
+            fill: none;
+            stroke-dasharray: 5, 5;
+        }
+    </style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<canvas id="canvas"></canvas>
+
+<div class="ui-panel controls">
+    <h3>🚀 Controles de Navegación</h3>
+
+    <div class="control-group">
+        <label>Velocidad de Simulación</label>
+        <input type="range" id="timeSpeed" min="0" max="10" value="1" step="0.1">
+        <span id="speedValue">1x</span>
+    </div>
+
+    <div class="control-group">
+        <label>Zoom</label>
+        <input type="range" id="zoomSlider" min="0.1" max="5" value="1" step="0.1">
+    </div>
+
+    <div class="control-group">
+        <label>Enfocar Objeto</label>
+        <div>
+            <button class="planet-button" onclick="focusObject('earth')">🌍 Tierra</button>
+            <button class="planet-button" onclick="focusObject('moon')">🌙 Luna</button>
+            <button class="planet-button" onclick="focusObject('mars')">🔴 Marte</button>
+            <button class="planet-button" onclick="focusObject('center')">☀️ Centro</button>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <button onclick="toggleOrbits()">Mostrar/Ocultar Órbitas</button>
+        <button onclick="resetView()">Reiniciar Vista</button>
+    </div>
+</div>
+
+<div class="ui-panel info-panel">
+    <h3>📊 Información Orbital</h3>
+    <div id="objectInfo">
+        <div class="info-item">
+            <div class="info-label">Objeto Seleccionado</div>
+            <div class="info-value" id="selectedObject">Ninguno</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">Distancia desde el Centro</div>
+            <div class="info-value" id="distanceInfo">-</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">Velocidad Orbital</div>
+            <div class="info-value" id="velocityInfo">-</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">Período Orbital</div>
+            <div class="info-value" id="periodInfo">-</div>
+        </div>
+    </div>
+
+    <h3>🎓 Datos Educativos</h3>
+    <div class="info-item">
+        <div class="info-label">Distancia Tierra-Luna</div>
+        <div class="info-value">384,400 km</div>
+    </div>
+    <div class="info-item">
+        <div class="info-label">Distancia Tierra-Marte (promedio)</div>
+        <div class="info-value">225 millones km</div>
+    </div>
+    <div class="info-item">
+        <div class="info-label">Concepto Clave</div>
+        <div class="info-value">Los objetos más cercanos al centro orbitan más rápido (Leyes de Kepler)</div>
+    </div>
+</div>
+
+<div class="ui-panel bottom-controls">
+    <div class="speed-indicator">
+        <span>⏱️ Tiempo:</span>
+        <span id="simulationTime">0 días</span>
+    </div>
+    <button onclick="pauseSimulation()">⏸️ Pausar</button>
+    <button onclick="playSimulation()">▶️ Reproducir</button>
+</div>
+
+<script>
+    // Configuración del canvas y contexto
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Variables de estado
+    let animationId;
+    let isPaused = false;
+    let timeSpeed = 1;
+    let zoom = 1;
+    let offsetX = 0;
+    let offsetY = 0;
+    let isDragging = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    let simulationTime = 0;
+    let showOrbits = true;
+    let selectedObject = null;
+    let focusedObject = null;
+
+    // Configuración de objetos celestes
+    const celestialBodies = {
+        earth: {
+            name: 'Tierra',
+            radius: 8,
+            color: '#4fc3f7',
+            orbitRadius: 150,
+            orbitSpeed: 0.02,
+            angle: 0,
+            realDistance: 149597870.7, // km
+            realPeriod: 365.25, // días
+            info: 'Nuestro planeta hogar, el tercero desde el Sol'
+        },
+        moon: {
+            name: 'Luna',
+            radius: 3,
+            color: '#e0e0e0',
+            orbitRadius: 25,
+            orbitSpeed: 0.08,
+            angle: 0,
+            parent: 'earth',
+            realDistance: 384400, // km desde la Tierra
+            realPeriod: 27.3, // días
+            info: 'El único satélite natural de la Tierra'
+        },
+        mars: {
+            name: 'Marte',
+            radius: 6,
+            color: '#f44336',
+            orbitRadius: 220,
+            orbitSpeed: 0.01,
+            angle: Math.PI,
+            realDistance: 227939200, // km
+            realPeriod: 687, // días
+            info: 'El planeta rojo, cuarto desde el Sol'
+        }
+    };
+
+    // Configuración inicial del canvas
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    // Generar estrellas de fondo
+    function generateStars() {
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 200; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.width = star.style.height = Math.random() * 3 + 1 + 'px';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+    }
+
+    // Funciones de transformación de coordenadas
+    function getScreenX(x) {
+        return canvas.width / 2 + (x + offsetX) * zoom;
+    }
+
+    function getScreenY(y) {
+        return canvas.height / 2 + (y + offsetY) * zoom;
+    }
+
+    function getWorldX(screenX) {
+        return (screenX - canvas.width / 2) / zoom - offsetX;
+    }
+
+    function getWorldY(screenY) {
+        return (screenY - canvas.height / 2) / zoom - offsetY;
+    }
+
+    // Dibujar órbitas
+    function drawOrbits() {
+        if (!showOrbits) return;
+
+        ctx.strokeStyle = 'rgba(100, 181, 246, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]);
+
+        Object.keys(celestialBodies).forEach(key => {
+            const body = celestialBodies[key];
+            if (body.parent) return; // No dibujar órbitas de satélites por ahora
+
+            ctx.beginPath();
+            ctx.arc(
+                getScreenX(0),
+                getScreenY(0),
+                body.orbitRadius * zoom,
+                0,
+                2 * Math.PI
+            );
+            ctx.stroke();
+        });
+
+        ctx.setLineDash([]);
+    }
+
+    // Dibujar cuerpos celestes
+    function drawCelestialBodies() {
+        Object.keys(celestialBodies).forEach(key => {
+            const body = celestialBodies[key];
+            let x, y;
+
+            if (body.parent) {
+                // Calcular posición relativa al objeto padre
+                const parent = celestialBodies[body.parent];
+                const parentX = Math.cos(parent.angle) * parent.orbitRadius;
+                const parentY = Math.sin(parent.angle) * parent.orbitRadius;
+                x = parentX + Math.cos(body.angle) * body.orbitRadius;
+                y = parentY + Math.sin(body.angle) * body.orbitRadius;
+            } else {
+                x = Math.cos(body.angle) * body.orbitRadius;
+                y = Math.sin(body.angle) * body.orbitRadius;
+            }
+
+            const screenX = getScreenX(x);
+            const screenY = getScreenY(y);
+            const radius = body.radius * zoom;
+
+            // Dibujar el cuerpo celeste
+            ctx.beginPath();
+            ctx.arc(screenX, screenY, radius, 0, 2 * Math.PI);
+
+            // Gradiente para dar efecto 3D
+            const gradient = ctx.createRadialGradient(
+                screenX - radius * 0.3, screenY - radius * 0.3, 0,
+                screenX, screenY, radius
+            );
+            gradient.addColorStop(0, body.color);
+            gradient.addColorStop(1, body.color + '80');
+
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            // Borde si está seleccionado
+            if (selectedObject === key) {
+                ctx.strokeStyle = '#ffeb3b';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            // Etiqueta
+            ctx.fillStyle = 'white';
+            ctx.font = `${12 * zoom}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(body.name, screenX, screenY + radius + 15 * zoom);
+
+            // Guardar posición para detección de clics
+            body.screenX = screenX;
+            body.screenY = screenY;
+            body.screenRadius = radius;
+        });
+    }
+
+    // Dibujar el Sol en el centro
+    function drawSun() {
+        const screenX = getScreenX(0);
+        const screenY = getScreenY(0);
+        const radius = 15 * zoom;
+
+        const gradient = ctx.createRadialGradient(
+            screenX, screenY, 0,
+            screenX, screenY, radius
+        );
+        gradient.addColorStop(0, '#ffeb3b');
+        gradient.addColorStop(0.7, '#ff9800');
+        gradient.addColorStop(1, '#f57c00');
+
+        ctx.beginPath();
+        ctx.arc(screenX, screenY, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        // Efecto de brillo
+        ctx.shadowColor = '#ffeb3b';
+        ctx.shadowBlur = 20 * zoom;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.fillStyle = 'white';
+        ctx.font = `${14 * zoom}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.fillText('Sol', screenX, screenY + radius + 20 * zoom);
+    }
+
+    // Actualizar física orbital
+    function updatePhysics() {
+        if (isPaused) return;
+
+        simulationTime += timeSpeed;
+
+        Object.keys(celestialBodies).forEach(key => {
+            const body = celestialBodies[key];
+            body.angle += body.orbitSpeed * timeSpeed;
+        });
+
+        // Actualizar información del objeto seleccionado
+        updateObjectInfo();
+    }
+
+    // Actualizar información del panel
+    function updateObjectInfo() {
+        if (!selectedObject) return;
+
+        const body = celestialBodies[selectedObject];
+        const distance = body.realDistance;
+        const period = body.realPeriod;
+        const velocity = (2 * Math.PI * distance) / (period * 24 * 3600); // km/s
+
+        document.getElementById('selectedObject').textContent = body.name;
+        document.getElementById('distanceInfo').textContent =
+            distance > 1000000 ?
+                `${(distance / 1000000).toFixed(1)} millones km` :
+                `${distance.toLocaleString()} km`;
+        document.getElementById('velocityInfo').textContent = `${velocity.toFixed(1)} km/s`;
+        document.getElementById('periodInfo').textContent = `${period} días`;
+    }
+
+    // Función principal de renderizado
+    function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawOrbits();
+        drawSun();
+        drawCelestialBodies();
+
+        updatePhysics();
+
+        // Actualizar tiempo de simulación
+        document.getElementById('simulationTime').textContent =
+            `${Math.floor(simulationTime)} días`;
+
+        animationId = requestAnimationFrame(render);
+    }
+
+    // Manejo de eventos del mouse
+    canvas.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+
+        // Detectar clic en objetos
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        Object.keys(celestialBodies).forEach(key => {
+            const body = celestialBodies[key];
+            const distance = Math.sqrt(
+                Math.pow(mouseX - body.screenX, 2) +
+                Math.pow(mouseY - body.screenY, 2)
+            );
+
+            if (distance <= body.screenRadius) {
+                selectedObject = key;
+                updateObjectInfo();
+            }
+        });
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        const deltaX = e.clientX - lastMouseX;
+        const deltaY = e.clientY - lastMouseY;
+
+        offsetX += deltaX / zoom;
+        offsetY += deltaY / zoom;
+
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+    });
+
+    canvas.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Zoom con rueda del mouse
+    canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+        zoom = Math.max(0.1, Math.min(5, zoom * zoomFactor));
+        document.getElementById('zoomSlider').value = zoom;
+    });
+
+    // Controles de la interfaz
+    document.getElementById('timeSpeed').addEventListener('input', (e) => {
+        timeSpeed = parseFloat(e.target.value);
+        document.getElementById('speedValue').textContent = timeSpeed + 'x';
+    });
+
+    document.getElementById('zoomSlider').addEventListener('input', (e) => {
+        zoom = parseFloat(e.target.value);
+    });
+
+    // Funciones de control
+    function focusObject(objectKey) {
+        if (objectKey === 'center') {
+            offsetX = 0;
+            offsetY = 0;
+            focusedObject = null;
+            return;
+        }
+
+        const body = celestialBodies[objectKey];
+        if (!body) return;
+
+        let x, y;
+        if (body.parent) {
+            const parent = celestialBodies[body.parent];
+            const parentX = Math.cos(parent.angle) * parent.orbitRadius;
+            const parentY = Math.sin(parent.angle) * parent.orbitRadius;
+            x = parentX + Math.cos(body.angle) * body.orbitRadius;
+            y = parentY + Math.sin(body.angle) * body.orbitRadius;
+        } else {
+            x = Math.cos(body.angle) * body.orbitRadius;
+            y = Math.sin(body.angle) * body.orbitRadius;
+        }
+
+        offsetX = -x;
+        offsetY = -y;
+        focusedObject = objectKey;
+        selectedObject = objectKey;
+        updateObjectInfo();
+    }
+
+    function toggleOrbits() {
+        showOrbits = !showOrbits;
+    }
+
+    function resetView() {
+        offsetX = 0;
+        offsetY = 0;
+        zoom = 1;
+        document.getElementById('zoomSlider').value = 1;
+        focusedObject = null;
+    }
+
+    function pauseSimulation() {
+        isPaused = true;
+    }
+
+    function playSimulation() {
+        isPaused = false;
+    }
+
+    // Inicialización
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    generateStars();
+    render();
+
+    // Seleccionar la Tierra por defecto
+    selectedObject = 'earth';
+    updateObjectInfo();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982e71a5a3dfca13',t:'MTc1ODUwODg5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

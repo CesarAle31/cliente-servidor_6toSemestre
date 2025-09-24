@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificado de Reconocimiento - Alex</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500&display=swap');
+
+        .certificate {
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: transform 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        .certificate:hover {
+            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.02);
+        }
+
+        .certificate-inner {
+            background: linear-gradient(45deg, #f8fafc, #e2e8f0);
+            border: 8px solid #d4af37;
+            box-shadow:
+                    inset 0 0 0 4px #fff,
+                    0 20px 40px rgba(0,0,0,0.1),
+                    0 0 0 1px rgba(212, 175, 55, 0.3);
+        }
+
+        .ornament {
+            color: #d4af37;
+            font-size: 2rem;
+        }
+
+        .signature-line {
+            border-bottom: 2px solid #374151;
+            width: 200px;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff6b6b;
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        .confetti:nth-child(2n) { background: #4ecdc4; animation-delay: -0.5s; }
+        .confetti:nth-child(3n) { background: #45b7d1; animation-delay: -1s; }
+        .confetti:nth-child(4n) { background: #96ceb4; animation-delay: -1.5s; }
+        .confetti:nth-child(5n) { background: #feca57; animation-delay: -2s; }
+        .confetti:nth-child(6n) { background: #ff9ff3; animation-delay: -2.5s; }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .sparkle {
+            position: absolute;
+            color: #d4af37;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        .celebration-btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            transition: all 0.3s ease;
+        }
+
+        .celebration-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4 overflow-hidden">
+
+<!-- Confetti Container -->
+<div id="confetti-container" class="fixed inset-0 pointer-events-none z-10"></div>
+
+<!-- Sparkles -->
+<div class="sparkle text-2xl" style="top: 10%; left: 15%; animation-delay: 0s;">✨</div>
+<div class="sparkle text-xl" style="top: 20%; right: 20%; animation-delay: 0.7s;">⭐</div>
+<div class="sparkle text-2xl" style="bottom: 25%; left: 10%; animation-delay: 1.4s;">✨</div>
+<div class="sparkle text-xl" style="bottom: 15%; right: 15%; animation-delay: 2.1s;">⭐</div>
+<div class="sparkle text-2xl" style="top: 50%; left: 5%; animation-delay: 0.3s;">✨</div>
+<div class="sparkle text-xl" style="top: 60%; right: 8%; animation-delay: 1.8s;">⭐</div>
+
+<!-- Certificate -->
+<div class="certificate w-full max-w-4xl mx-auto p-8 rounded-lg shadow-2xl">
+    <div class="certificate-inner rounded-lg p-12 text-center relative">
+
+        <!-- Header Ornaments -->
+        <div class="flex justify-center items-center mb-6">
+            <span class="ornament">❦</span>
+            <span class="mx-4 text-3xl font-bold text-gray-800">CERTIFICADO DE RECONOCIMIENTO</span>
+            <span class="ornament">❦</span>
+        </div>
+
+        <!-- Decorative Line -->
+        <div class="w-32 h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent mx-auto mb-8"></div>
+
+        <!-- Main Content -->
+        <div class="space-y-6">
+            <p class="text-lg text-gray-700 font-light">Se otorga el presente certificado a</p>
+
+            <h1 class="text-6xl font-bold text-gray-900 mb-4 tracking-wide">
+                ALEX
+            </h1>
+
+            <div class="max-w-2xl mx-auto">
+                <p class="text-xl text-gray-700 leading-relaxed mb-6">
+                    En reconocimiento a su <span class="font-semibold text-gray-900">excepcional dedicación y esfuerzo</span>
+                    para mantener nuestra oficina funcionando a la perfección durante todo el año.
+                </p>
+
+                <p class="text-lg text-gray-600 mb-8">
+                    Su compromiso, profesionalismo y atención al detalle han sido fundamentales
+                    para el éxito de nuestro equipo. ¡Gracias por hacer que todo funcione sin problemas!
+                </p>
+            </div>
+
+            <!-- Award Elements -->
+            <div class="flex justify-center items-center space-x-8 my-8">
+                <div class="text-6xl">🏆</div>
+                <div class="text-4xl">⭐</div>
+                <div class="text-6xl">🎉</div>
+            </div>
+
+            <!-- Date and Signature -->
+            <div class="flex justify-between items-end mt-12 pt-8">
+                <div class="text-left">
+                    <p class="text-gray-600 mb-2">Fecha:</p>
+                    <p class="text-lg font-semibold" id="current-date"></p>
+                </div>
+
+                <div class="text-center">
+                    <div class="signature-line mb-2"></div>
+                    <p class="text-gray-600 font-medium">Todo el Equipo de Trabajo</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Corner Ornaments -->
+        <div class="absolute top-4 left-4 text-3xl text-yellow-500">❦</div>
+        <div class="absolute top-4 right-4 text-3xl text-yellow-500">❦</div>
+        <div class="absolute bottom-4 left-4 text-3xl text-yellow-500">❦</div>
+        <div class="absolute bottom-4 right-4 text-3xl text-yellow-500">❦</div>
+    </div>
+</div>
+
+<!-- Celebration Button -->
+<button id="celebrate-btn" class="celebration-btn fixed bottom-8 right-8 px-6 py-3 rounded-full text-white font-semibold shadow-lg z-20">
+    🎉 ¡Celebrar!
+</button>
+
+<script>
+    // Set current date
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+
+    // Confetti creation function
+    function createConfetti() {
+        const confettiContainer = document.getElementById('confetti-container');
+        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDelay = Math.random() * 3 + 's';
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+
+            // Random shapes
+            if (Math.random() > 0.5) {
+                confetti.style.borderRadius = '50%';
+            }
+
+            confettiContainer.appendChild(confetti);
+
+            // Remove confetti after animation
+            setTimeout(() => {
+                if (confetti.parentNode) {
+                    confetti.parentNode.removeChild(confetti);
+                }
+            }, 5000);
+        }
+    }
+
+    // Auto-start confetti
+    createConfetti();
+
+    // Celebration button
+    document.getElementById('celebrate-btn').addEventListener('click', function() {
+        createConfetti();
+
+        // Add extra sparkle effect
+        const certificate = document.querySelector('.certificate');
+        certificate.style.transform = 'perspective(1000px) rotateX(10deg) rotateY(-10deg) scale(1.05)';
+
+        setTimeout(() => {
+            certificate.style.transform = '';
+        }, 500);
+    });
+
+    // Continuous confetti every 8 seconds
+    setInterval(createConfetti, 8000);
+
+    // Add random sparkles
+    function addRandomSparkle() {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.textContent = Math.random() > 0.5 ? '✨' : '⭐';
+        sparkle.style.left = Math.random() * 90 + '%';
+        sparkle.style.top = Math.random() * 90 + '%';
+        sparkle.style.fontSize = (Math.random() * 20 + 15) + 'px';
+        sparkle.style.animationDelay = '0s';
+
+        document.body.appendChild(sparkle);
+
+        setTimeout(() => {
+            if (sparkle.parentNode) {
+                sparkle.parentNode.removeChild(sparkle);
+            }
+        }, 2000);
+    }
+
+    // Add sparkles periodically
+    setInterval(addRandomSparkle, 3000);
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'983b63f7632e3234',t:'MTc1ODY0NDY0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

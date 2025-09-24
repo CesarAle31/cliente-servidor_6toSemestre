@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario Ferretería El Martillo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .filter-select {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            border-left: 4px solid;
+        }
+
+        .stat-card.total { border-left-color: #667eea; }
+        .stat-card.low-stock { border-left-color: #f093fb; }
+        .stat-card.out-stock { border-left-color: #ff6b6b; }
+        .stat-card.categories { border-left-color: #56ab2f; }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .inventory-table {
+            padding: 30px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        th:hover {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s ease;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .stock-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            min-width: 80px;
+            display: inline-block;
+        }
+
+        .stock-high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .stock-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .stock-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .stock-out {
+            background: #f5c6cb;
+            color: #721c24;
+        }
+
+        .category-badge {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state img {
+            width: 120px;
+            opacity: 0.5;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                min-width: auto;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>
+            🔨 Ferretería El Martillo
+        </h1>
+        <p>Sistema de Gestión de Inventario</p>
+    </div>
+
+    <div class="controls">
+        <div class="controls-row">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar productos por nombre, código o descripción...">
+                <span class="search-icon">🔍</span>
+            </div>
+
+            <select id="categoryFilter" class="filter-select">
+                <option value="">Todas las categorías</option>
+                <option value="herramientas">Herramientas</option>
+                <option value="tornilleria">Tornillería</option>
+                <option value="electricidad">Electricidad</option>
+                <option value="plomeria">Plomería</option>
+                <option value="pintura">Pintura</option>
+                <option value="jardineria">Jardinería</option>
+            </select>
+
+            <select id="stockFilter" class="filter-select">
+                <option value="">Todo el stock</option>
+                <option value="high">Stock alto</option>
+                <option value="medium">Stock medio</option>
+                <option value="low">Stock bajo</option>
+                <option value="out">Sin stock</option>
+            </select>
+
+            <button class="btn btn-primary" onclick="openAddModal()">
+                ➕ Agregar Producto
+            </button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card total">
+                <div class="stat-number" id="totalProducts">0</div>
+                <div class="stat-label">Total Productos</div>
+            </div>
+            <div class="stat-card low-stock">
+                <div class="stat-number" id="lowStockCount">0</div>
+                <div class="stat-label">Stock Bajo</div>
+            </div>
+            <div class="stat-card out-stock">
+                <div class="stat-number" id="outStockCount">0</div>
+                <div class="stat-label">Sin Stock</div>
+            </div>
+            <div class="stat-card categories">
+                <div class="stat-number" id="categoriesCount">6</div>
+                <div class="stat-label">Categorías</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inventory-table">
+        <div class="table-container">
+            <table id="inventoryTable">
+                <thead>
+                <tr>
+                    <th onclick="sortTable('code')">Código 📋</th>
+                    <th onclick="sortTable('name')">Producto 📦</th>
+                    <th onclick="sortTable('category')">Categoría 🏷️</th>
+                    <th onclick="sortTable('stock')">Stock 📊</th>
+                    <th onclick="sortTable('price')">Precio 💰</th>
+                    <th onclick="sortTable('supplier')">Proveedor 🏢</th>
+                    <th>Acciones ⚙️</th>
+                </tr>
+                </thead>
+                <tbody id="inventoryBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para agregar/editar producto -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+        <h3 id="modalTitle">Agregar Nuevo Producto</h3>
+
+        <form id="productForm">
+            <div class="form-group">
+                <label for="productCode">Código del Producto</label>
+                <input type="text" id="productCode" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productName">Nombre del Producto</label>
+                <input type="text" id="productName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productCategory">Categoría</label>
+                <select id="productCategory" required>
+                    <option value="">Seleccionar categoría</option>
+                    <option value="herramientas">Herramientas</option>
+                    <option value="tornilleria">Tornillería</option>
+                    <option value="electricidad">Electricidad</option>
+                    <option value="plomeria">Plomería</option>
+                    <option value="pintura">Pintura</option>
+                    <option value="jardineria">Jardinería</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="productStock">Cantidad en Stock</label>
+                <input type="number" id="productStock" min="0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productPrice">Precio ($)</label>
+                <input type="number" id="productPrice" step="0.01" min="0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productSupplier">Proveedor</label>
+                <input type="text" id="productSupplier" required>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Producto</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Base de datos simulada
+    let inventory = [
+        {
+            id: 1,
+            code: 'HER001',
+            name: 'Martillo de Carpintero 16oz',
+            category: 'herramientas',
+            stock: 25,
+            price: 15.99,
+            supplier: 'Herramientas Pro'
+        },
+        {
+            id: 2,
+            code: 'TOR001',
+            name: 'Tornillos Autorroscantes 3/4"',
+            category: 'tornilleria',
+            stock: 500,
+            price: 0.05,
+            supplier: 'Tornillos SA'
+        },
+        {
+            id: 3,
+            code: 'ELE001',
+            name: 'Cable Eléctrico 12 AWG',
+            category: 'electricidad',
+            stock: 8,
+            price: 2.50,
+            supplier: 'ElectroMax'
+        },
+        {
+            id: 4,
+            code: 'PLO001',
+            name: 'Tubería PVC 1/2 pulgada',
+            category: 'plomeria',
+            stock: 0,
+            price: 3.25,
+            supplier: 'AguaFlex'
+        },
+        {
+            id: 5,
+            code: 'PIN001',
+            name: 'Pintura Látex Blanca 1 Galón',
+            category: 'pintura',
+            stock: 12,
+            price: 28.50,
+            supplier: 'ColorMax'
+        },
+        {
+            id: 6,
+            code: 'JAR001',
+            name: 'Manguera de Jardín 25m',
+            category: 'jardineria',
+            stock: 3,
+            price: 45.00,
+            supplier: 'Verde Jardín'
+        },
+        {
+            id: 7,
+            code: 'HER002',
+            name: 'Destornillador Phillips #2',
+            category: 'herramientas',
+            stock: 18,
+            price: 8.75,
+            supplier: 'Herramientas Pro'
+        },
+        {
+            id: 8,
+            code: 'TOR002',
+            name: 'Tuercas Hexagonales M8',
+            category: 'tornilleria',
+            stock: 200,
+            price: 0.15,
+            supplier: 'Tornillos SA'
+        }
+    ];
+
+    let currentEditId = null;
+    let sortDirection = {};
+
+    // Inicializar la aplicación
+    function init() {
+        renderInventory();
+        updateStats();
+        setupEventListeners();
+    }
+
+    // Configurar event listeners
+    function setupEventListeners() {
+        document.getElementById('searchInput').addEventListener('input', filterInventory);
+        document.getElementById('categoryFilter').addEventListener('change', filterInventory);
+        document.getElementById('stockFilter').addEventListener('change', filterInventory);
+        document.getElementById('productForm').addEventListener('submit', handleFormSubmit);
+    }
+
+    // Renderizar inventario
+    function renderInventory(data = inventory) {
+        const tbody = document.getElementById('inventoryBody');
+
+        if (data.length === 0) {
+            tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <div>📦</div>
+                            <h3>No se encontraron productos</h3>
+                            <p>Intenta ajustar los filtros de búsqueda</p>
+                        </td>
+                    </tr>
+                `;
+            return;
+        }
+
+        tbody.innerHTML = data.map(product => `
+                <tr>
+                    <td><strong>${product.code}</strong></td>
+                    <td>${product.name}</td>
+                    <td><span class="category-badge">${getCategoryName(product.category)}</span></td>
+                    <td><span class="stock-badge ${getStockClass(product.stock)}">${product.stock} unidades</span></td>
+                    <td class="price">$${product.price.toFixed(2)}</td>
+                    <td>${product.supplier}</td>
+                    <td class="actions">
+                        <button class="btn btn-sm btn-warning" onclick="editProduct(${product.id})">✏️</button>
+                        <button class="btn btn-sm btn-success" onclick="adjustStock(${product.id})">📊</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+    }
+
+    // Obtener nombre de categoría
+    function getCategoryName(category) {
+        const categories = {
+            'herramientas': 'Herramientas',
+            'tornilleria': 'Tornillería',
+            'electricidad': 'Electricidad',
+            'plomeria': 'Plomería',
+            'pintura': 'Pintura',
+            'jardineria': 'Jardinería'
+        };
+        return categories[category] || category;
+    }
+
+    // Obtener clase CSS para stock
+    function getStockClass(stock) {
+        if (stock === 0) return 'stock-out';
+        if (stock <= 5) return 'stock-low';
+        if (stock <= 20) return 'stock-medium';
+        return 'stock-high';
+    }
+
+    // Actualizar estadísticas
+    function updateStats() {
+        const total = inventory.length;
+        const lowStock = inventory.filter(p => p.stock <= 5 && p.stock > 0).length;
+        const outStock = inventory.filter(p => p.stock === 0).length;
+
+        document.getElementById('totalProducts').textContent = total;
+        document.getElementById('lowStockCount').textContent = lowStock;
+        document.getElementById('outStockCount').textContent = outStock;
+    }
+
+    // Filtrar inventario
+    function filterInventory() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const categoryFilter = document.getElementById('categoryFilter').value;
+        const stockFilter = document.getElementById('stockFilter').value;
+
+        let filtered = inventory.filter(product => {
+            const matchesSearch = product.name.toLowerCase().includes(searchTerm) ||
+                product.code.toLowerCase().includes(searchTerm) ||
+                product.supplier.toLowerCase().includes(searchTerm);
+
+            const matchesCategory = !categoryFilter || product.category === categoryFilter;
+
+            let matchesStock = true;
+            if (stockFilter === 'high') matchesStock = product.stock > 20;
+            else if (stockFilter === 'medium') matchesStock = product.stock > 5 && product.stock <= 20;
+            else if (stockFilter === 'low') matchesStock = product.stock > 0 && product.stock <= 5;
+            else if (stockFilter === 'out') matchesStock = product.stock === 0;
+
+            return matchesSearch && matchesCategory && matchesStock;
+        });
+
+        renderInventory(filtered);
+    }
+
+    // Ordenar tabla
+    function sortTable(column) {
+        const direction = sortDirection[column] === 'asc' ? 'desc' : 'asc';
+        sortDirection[column] = direction;
+
+        inventory.sort((a, b) => {
+            let valueA = a[column];
+            let valueB = b[column];
+
+            if (typeof valueA === 'string') {
+                valueA = valueA.toLowerCase();
+                valueB = valueB.toLowerCase();
+            }
+
+            if (direction === 'asc') {
+                return valueA > valueB ? 1 : -1;
+            } else {
+                return valueA < valueB ? 1 : -1;
+            }
+        });
+
+        filterInventory();
+    }
+
+    // Abrir modal para agregar producto
+    function openAddModal() {
+        currentEditId = null;
+        document.getElementById('modalTitle').textContent = 'Agregar Nuevo Producto';
+        document.getElementById('productForm').reset();
+        document.getElementById('productModal').style.display = 'block';
+    }
+
+    // Editar producto
+    function editProduct(id) {
+        const product = inventory.find(p => p.id === id);
+        if (!product) return;
+
+        currentEditId = id;
+        document.getElementById('modalTitle').textContent = 'Editar Producto';
+        document.getElementById('productCode').value = product.code;
+        document.getElementById('productName').value = product.name;
+        document.getElementById('productCategory').value = product.category;
+        document.getElementById('productStock').value = product.stock;
+        document.getElementById('productPrice').value = product.price;
+        document.getElementById('productSupplier').value = product.supplier;
+        document.getElementById('productModal').style.display = 'block';
+    }
+
+    // Ajustar stock
+    function adjustStock(id) {
+        const product = inventory.find(p => p.id === id);
+        if (!product) return;
+
+        const newStock = prompt(`Stock actual: ${product.stock}\nIngrese la nueva cantidad:`, product.stock);
+        if (newStock !== null && !isNaN(newStock) && newStock >= 0) {
+            product.stock = parseInt(newStock);
+            renderInventory();
+            updateStats();
+            filterInventory();
+        }
+    }
+
+    // Eliminar producto
+    function deleteProduct(id) {
+        const product = inventory.find(p => p.id === id);
+        if (!product) return;
+
+        if (confirm(`¿Está seguro de eliminar "${product.name}"?`)) {
+            inventory = inventory.filter(p => p.id !== id);
+            renderInventory();
+            updateStats();
+            filterInventory();
+        }
+    }
+
+    // Cerrar modal
+    function closeModal() {
+        document.getElementById('productModal').style.display = 'none';
+    }
+
+    // Manejar envío del formulario
+    function handleFormSubmit(e) {
+        e.preventDefault();
+
+        const formData = {
+            code: document.getElementById('productCode').value,
+            name: document.getElementById('productName').value,
+            category: document.getElementById('productCategory').value,
+            stock: parseInt(document.getElementById('productStock').value),
+            price: parseFloat(document.getElementById('productPrice').value),
+            supplier: document.getElementById('productSupplier').value
+        };
+
+        if (currentEditId) {
+            // Editar producto existente
+            const index = inventory.findIndex(p => p.id === currentEditId);
+            if (index !== -1) {
+                inventory[index] = { ...inventory[index], ...formData };
+            }
+        } else {
+            // Agregar nuevo producto
+            const newId = Math.max(...inventory.map(p => p.id)) + 1;
+            inventory.push({ id: newId, ...formData });
+        }
+
+        closeModal();
+        renderInventory();
+        updateStats();
+        filterInventory();
+    }
+
+    // Cerrar modal al hacer clic fuera
+    window.onclick = function(event) {
+        const modal = document.getElementById('productModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+
+    // Inicializar aplicación
+    init();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982e77b9d499ca13',t:'MTc1ODUwOTE0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

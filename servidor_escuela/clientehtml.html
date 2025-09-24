@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Lista de Cursos Disponibles</h2>
+<ul id="cursos"></ul>
+
+<script>
+    const ws = new WebSocket("ws://localhost:9595");
+
+    ws.onopen = () => {
+        console.log("Conectado al servidor");
+        ws.send(JSON.stringify({ accion: "listar_cursos" }));
+    };
+
+    ws.onmessage = (event) => {
+        const respuesta = JSON.parse(event.data);
+
+        if (respuesta.accion === "lista_cursos") {
+            mostrarCursos(respuesta.data);
+        } else if (respuesta.accion === "inscripcion") {
+            alert(respuesta.mensaje);
+        }
+    };
+
+    function mostrarCursos(cursos) {
+        const lista = document.getElementById("cursos");
+        lista.innerHTML = "";
+        cursos.forEach(curso => {
+            const li = document.createElement("li");
+            li.textContent = ${curso.nombre} (${curso.disponibles} lugares disponibles);
+
+            if (curso.disponibles > 0) {
+                const boton = document.createElement("button");
+                boton.textContent = "Inscribirse";
+                boton.onclick = () => inscribirse(curso.id);
+                li.appendChild(boton);
+            } else {
+                li.innerHTML += " — Curso lleno";
+            }
+
+            lista.appendChild(li);
+        });
+    }
+
+    function inscribirse(cursoId) {
+        ws.send(JSON.stringify({ accion: "inscribirse", curso_id: cursoId }));
+    }
+</script>
+</body>
+</html>

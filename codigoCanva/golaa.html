@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronología Interactiva - Civilizaciones Antiguas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+        .timeline-line {
+            background: linear-gradient(90deg, #d4af37 0%, #ffd700 50%, #d4af37 100%);
+        }
+
+        .egypt-theme {
+            background: linear-gradient(135deg, #d4af37, #f4e4bc);
+            border-left: 4px solid #d4af37;
+        }
+
+        .greece-theme {
+            background: linear-gradient(135deg, #4a90e2, #87ceeb);
+            border-left: 4px solid #4a90e2;
+        }
+
+        .rome-theme {
+            background: linear-gradient(135deg, #dc143c, #ffb6c1);
+            border-left: 4px solid #dc143c;
+        }
+
+        .timeline-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .timeline-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .expanded {
+            transform: scale(1.02);
+        }
+
+        .civilization-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        .egypt-icon { background: linear-gradient(45deg, #d4af37, #b8860b); }
+        .greece-icon { background: linear-gradient(45deg, #4a90e2, #1e6091); }
+        .rome-icon { background: linear-gradient(45deg, #dc143c, #8b0000); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 to-blue-50 min-h-screen font-inter">
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-5xl font-cinzel font-bold text-gray-800 mb-4">
+            Civilizaciones Antiguas
+        </h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Explora los momentos más importantes de Egipto, Grecia y Roma desde el 3000 a.C. hasta el 500 d.C.
+        </p>
+        <div class="mt-6 text-sm text-gray-500">
+            Haz clic en cualquier evento para descubrir más detalles
+        </div>
+    </div>
+
+    <!-- Timeline Container -->
+    <div class="relative max-w-6xl mx-auto">
+        <!-- Timeline Line -->
+        <div class="absolute left-1/2 transform -translate-x-1/2 w-2 timeline-line h-full rounded-full"></div>
+
+        <!-- Timeline Events -->
+        <div class="space-y-12" id="timeline">
+            <!-- Event 1: Unificación de Egipto -->
+            <div class="timeline-event flex items-center" data-year="-3100">
+                <div class="w-1/2 pr-8 text-right">
+                    <div class="timeline-card egypt-theme p-6 rounded-lg shadow-lg" onclick="toggleCard(this)">
+                        <div class="civilization-icon egypt-icon">🏺</div>
+                        <h3 class="text-xl font-cinzel font-semibold mb-2">Unificación de Egipto</h3>
+                        <p class="text-lg font-semibold text-gray-700">3100 a.C.</p>
+                        <p class="text-sm text-gray-600 mt-2">El faraón Menes unifica el Alto y Bajo Egipto</p>
+
+                        <div class="expanded-content hidden mt-4 pt-4 border-t border-yellow-600">
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Importancia:</strong> Marca el inicio de la civilización egipcia unificada y el comienzo del período dinástico.
+                            </p>
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Consecuencias:</strong> Establecimiento de Memphis como capital y creación del sistema faraónico que duraría 3000 años.
+                            </p>
+                            <div class="bg-yellow-100 p-3 rounded text-xs">
+                                💡 <strong>Dato curioso:</strong> La corona del faraón combinaba la corona blanca del Alto Egipto y la roja del Bajo Egipto.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-8 h-8 bg-yellow-500 rounded-full border-4 border-white shadow-lg z-10 flex items-center justify-center">
+                    <div class="w-3 h-3 bg-white rounded-full"></div>
+                </div>
+                <div class="w-1/2 pl-8"></div>
+            </div>
+
+            <!-- Event 2: Pirámides de Giza -->
+            <div class="timeline-event flex items-center" data-year="-2580">
+                <div class="w-1/2 pr-8"></div>
+                <div class="w-8 h-8 bg-yellow-500 rounded-full border-4 border-white shadow-lg z-10 flex items-center justify-center">
+                    <div class="w-3 h-3 bg-white rounded-full"></div>
+                </div>
+                <div class="w-1/2 pl-8">
+                    <div class="timeline-card egypt-theme p-6 rounded-lg shadow-lg" onclick="toggleCard(this)">
+                        <div class="civilization-icon egypt-icon">🔺</div>
+                        <h3 class="text-xl font-cinzel font-semibold mb-2">Pirámides de Giza</h3>
+                        <p class="text-lg font-semibold text-gray-700">2580 a.C.</p>
+                        <p class="text-sm text-gray-600 mt-2">Construcción de la Gran Pirámide de Keops</p>
+
+                        <div class="expanded-content hidden mt-4 pt-4 border-t border-yellow-600">
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Construcción:</strong> Tomó aproximadamente 20 años y requirió más de 100,000 trabajadores.
+                            </p>
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Dimensiones:</strong> 146 metros de altura original, fue la estructura más alta del mundo durante 3,800 años.
+                            </p>
+                            <div class="bg-yellow-100 p-3 rounded text-xs">
+                                💡 <strong>Dato curioso:</strong> Es la única de las Siete Maravillas del Mundo Antiguo que aún existe.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event 3: Democracia Ateniense -->
+            <div class="timeline-event flex items-center" data-year="-508">
+                <div class="w-1/2 pr-8 text-right">
+                    <div class="timeline-card greece-theme p-6 rounded-lg shadow-lg" onclick="toggleCard(this)">
+                        <div class="civilization-icon greece-icon">🏛️</div>
+                        <h3 class="text-xl font-cinzel font-semibold mb-2">Democracia Ateniense</h3>
+                        <p class="text-lg font-semibold text-gray-700">508 a.C.</p>
+                        <p class="text-sm text-gray-600 mt-2">Clístenes establece la democracia en Atenas</p>
+
+                        <div class="expanded-content hidden mt-4 pt-4 border-t border-blue-600">
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Innovación:</strong> Primera forma de gobierno democrático en la historia, donde los ciudadanos participaban directamente.
+                            </p>
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Sistema:</strong> Asamblea popular (Ecclesia), Consejo de los 500 y tribunales populares.
+                            </p>
+                            <div class="bg-blue-100 p-3 rounded text-xs">
+                                💡 <strong>Dato curioso:</strong> Solo los hombres libres mayores de 18 años podían votar (aproximadamente 10% de la población).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-8 h-8 bg-blue-500 rounded-full border-4 border-white shadow-lg z-10 flex items-center justify-center">
+                    <div class="w-3 h-3 bg-white rounded-full"></div>
+                </div>
+                <div class="w-1/2 pl-8"></div>
+            </div>
+
+            <!-- Event 4: Guerras Médicas -->
+            <div class="timeline-event flex items-center" data-year="-490">
+                <div class="w-1/2 pr-8"></div>
+                <div class="w-8 h-8 bg-blue-500 rounded-full border-4 border-white shadow-lg z-10 flex items-center justify-center">
+                    <div class="w-3 h-3 bg-white rounded-full"></div>
+                </div>
+                <div class="w-1/2 pl-8">
+                    <div class="timeline-card greece-theme p-6 rounded-lg shadow-lg" onclick="toggleCard(this)">
+                        <div class="civilization-icon greece-icon">⚔️</div>
+                        <h3 class="text-xl font-cinzel font-semibold mb-2">Batalla de Maratón</h3>
+                        <p class="text-lg font-semibold text-gray-700">490 a.C.</p>
+                        <p class="text-sm text-gray-600 mt-2">Victoria griega sobre el Imperio Persa</p>
+
+                        <div class="expanded-content hidden mt-4 pt-4 border-t border-blue-600">
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Contexto:</strong> Primera Guerra Médica, los persas invaden Grecia bajo Darío I.
+                            </p>
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Resultado:</strong> 11,000 griegos derrotan a 25,000 persas, salvando la democracia ateniense.
+                            </p>
+                            <div class="bg-blue-100 p-3 rounded text-xs">
+                                💡 <strong>Dato curioso:</strong> El soldado Filípides corrió 42 km hasta Atenas para anunciar la victoria, origen del maratón moderno.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event 5: Siglo de Pericles -->
+            <div class="timeline-event flex items-center" data-year="-461">
+                <div class="w-1/2 pr-8 text-right">
+                    <div class="timeline-card greece-theme p-6 rounded-lg shadow-lg" onclick="toggleCard(this)">
+                        <div class="civilization-icon greece-icon">🎭</div>
+                        <h3 class="text-xl font-cinzel font-semibold mb-2">Siglo de Pericles</h3>
+                        <p class="text-lg font-semibold text-gray-700">461-429 a.C.</p>
+                        <p class="text-sm text-gray-600 mt-2">Apogeo cultural de Atenas</p>
+
+                        <div class="expanded-content hidden mt-4 pt-4 border-t border-blue-600">
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Logros:</strong> Construcción del Partenón, florecimiento del teatro, filosofía y artes.
+                            </p>
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Figuras:</strong> Sófocles, Eurípides, Sócrates, Fidias y otros grandes maestros.
+                            </p>
+                            <div class="bg-blue-100 p-3 rounded text-xs">
+                                💡 <strong>Dato curioso:</strong> Se construyó el Partenón en solo 9 años (447-438 a.C.).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-8 h-8 bg-blue-500 rounded-full border-4 border-white shadow-lg z-10 flex items-center justify-center">
+                    <div class="w-3 h-3 bg-white rounded-full"></div>
+                </div>
+                <div class="w-1/2 pl-8"></div>
+            </div>
+
+            <!-- Event 6: Fundación de Roma -->
+            <div class="timeline-event flex items-center" data-year="-753">
+                <div class="w-1/2 pr-8"></div>
+                <div class="w-8 h-8 bg-red-500 rounded-full border-4 border-white shadow-lg z-10 flex items-center justify-center">
+                    <div class="w-3 h-3 bg-white rounded-full"></div>
+                </div>
+                <div class="w-1/2 pl-8">
+                    <div class="timeline-card rome-theme p-6 rounded-lg shadow-lg" onclick="toggleCard(this)">
+                        <div class="civilization-icon rome-icon">🐺</div>
+                        <h3 class="text-xl font-cinzel font-semibold mb-2">Fundación de Roma</h3>
+                        <p class="text-lg font-semibold text-gray-700">753 a.C.</p>
+                        <p class="text-sm text-gray-600 mt-2">Rómulo funda la ciudad de Roma</p>
+
+                        <div class="expanded-content hidden mt-4 pt-4 border-t border-red-600">
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Leyenda:</strong> Rómulo y Remo, gemelos criados por una loba, fundan la ciudad en las siete colinas.
+                            </p>
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Realidad:</strong> Asentamientos etruscos y latinos se unifican gradualmente en el siglo VIII a.C.
+                            </p>
+                            <div class="bg-red-100 p-3 rounded text-xs">
+                                💡 <strong>Dato curioso:</strong> Roma comenzó como una pequeña ciudad-estado y llegó a controlar todo el Mediterráneo.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event 7: República Romana -->
+            <div class="timeline-event flex items-center" data-year="-509">
+                <div class="w-1/2 pr-8 text-right">
+                    <div class="timeline-card rome-theme p-6 rounded-lg shadow-lg" onclick="toggleCard(this)">
+                        <div class="civilization-icon rome-icon">🏛️</div>
+                        <h3 class="text-xl font-cinzel font-semibold mb-2">República Romana</h3>
+                        <p class="text-lg font-semibold text-gray-700">509 a.C.</p>
+                        <p class="text-sm text-gray-600 mt-2">Expulsión del último rey y establecimiento de la República</p>
+
+                        <div class="expanded-content hidden mt-4 pt-4 border-t border-red-600">
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Sistema:</strong> Dos cónsules, Senado y asambleas populares. División de poderes y controles mutuos.
+                            </p>
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Duración:</strong> La República duró casi 500 años hasta la llegada de Augusto.
+                            </p>
+                            <div class="bg-red-100 p-3 rounded text-xs">
+                                💡 <strong>Dato curioso:</strong> El lema "SPQR" (Senatus Populusque Romanus) representaba este sistema republicano.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-8 h-8 bg-red-500 rounded-full border-4 border-white shadow-lg z-10 flex items-center justify-center">
+                    <div class="w-3 h-3 bg-white rounded-full"></div>
+                </div>
+                <div class="w-1/2 pl-8"></div>
+            </div>
+
+            <!-- Event 8: Julio César -->
+            <div class="timeline-event flex items-center" data-year="-49">
+                <div class="w-1/2 pr-8"></div>
+                <div class="w-8 h-8 bg-red-500 rounded-full border-4 border-white shadow-lg z-10 flex items-center justify-center">
+                    <div class="w-3 h-3 bg-white rounded-full"></div>
+                </div>
+                <div class="w-1/2 pl-8">
+                    <div class="timeline-card rome-theme p-6 rounded-lg shadow-lg" onclick="toggleCard(this)">
+                        <div class="civilization-icon rome-icon">👑</div>
+                        <h3 class="text-xl font-cinzel font-semibold mb-2">César cruza el Rubicón</h3>
+                        <p class="text-lg font-semibold text-gray-700">49 a.C.</p>
+                        <p class="text-sm text-gray-600 mt-2">Inicio de la guerra civil que acabará con la República</p>
+
+                        <div class="expanded-content hidden mt-4 pt-4 border-t border-red-600">
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Contexto:</strong> César desafía al Senado y cruza el río Rubicón con sus legiones.
+                            </p>
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Consecuencia:</strong> Guerra civil, dictadura de César y fin de la República romana.
+                            </p>
+                            <div class="bg-red-100 p-3 rounded text-xs">
+                                💡 <strong>Dato curioso:</strong> "Alea iacta est" (la suerte está echada) - frase atribuida a César al cruzar el río.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event 9: Imperio Romano -->
+            <div class="timeline-event flex items-center" data-year="-27">
+                <div class="w-1/2 pr-8 text-right">
+                    <div class="timeline-card rome-theme p-6 rounded-lg shadow-lg" onclick="toggleCard(this)">
+                        <div class="civilization-icon rome-icon">🦅</div>
+                        <h3 class="text-xl font-cinzel font-semibold mb-2">Imperio Romano</h3>
+                        <p class="text-lg font-semibold text-gray-700">27 a.C.</p>
+                        <p class="text-sm text-gray-600 mt-2">Augusto se convierte en el primer emperador</p>
+
+                        <div class="expanded-content hidden mt-4 pt-4 border-t border-red-600">
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Transformación:</strong> Octavio (Augusto) establece el Principado, manteniendo formas republicanas.
+                            </p>
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Pax Romana:</strong> Período de paz y prosperidad que durará 200 años.
+                            </p>
+                            <div class="bg-red-100 p-3 rounded text-xs">
+                                💡 <strong>Dato curioso:</strong> El mes de agosto lleva su nombre en honor a Augusto.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-8 h-8 bg-red-500 rounded-full border-4 border-white shadow-lg z-10 flex items-center justify-center">
+                    <div class="w-3 h-3 bg-white rounded-full"></div>
+                </div>
+                <div class="w-1/2 pl-8"></div>
+            </div>
+
+            <!-- Event 10: Caída del Imperio Romano de Occidente -->
+            <div class="timeline-event flex items-center" data-year="476">
+                <div class="w-1/2 pr-8"></div>
+                <div class="w-8 h-8 bg-red-500 rounded-full border-4 border-white shadow-lg z-10 flex items-center justify-center">
+                    <div class="w-3 h-3 bg-white rounded-full"></div>
+                </div>
+                <div class="w-1/2 pl-8">
+                    <div class="timeline-card rome-theme p-6 rounded-lg shadow-lg" onclick="toggleCard(this)">
+                        <div class="civilization-icon rome-icon">⚰️</div>
+                        <h3 class="text-xl font-cinzel font-semibold mb-2">Caída de Roma</h3>
+                        <p class="text-lg font-semibold text-gray-700">476 d.C.</p>
+                        <p class="text-sm text-gray-600 mt-2">Odoacro depone al último emperador romano</p>
+
+                        <div class="expanded-content hidden mt-4 pt-4 border-t border-red-600">
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Fin de una era:</strong> Rómulo Augústulo, último emperador de Occidente, es depuesto.
+                            </p>
+                            <p class="text-sm text-gray-700 mb-3">
+                                <strong>Causas:</strong> Invasiones bárbaras, crisis económica, división del imperio y corrupción.
+                            </p>
+                            <div class="bg-red-100 p-3 rounded text-xs">
+                                💡 <strong>Dato curioso:</strong> El Imperio Romano de Oriente (Bizancio) continuó hasta 1453 d.C.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="mt-16 max-w-4xl mx-auto">
+        <h3 class="text-2xl font-cinzel font-semibold text-center mb-8">Civilizaciones</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="text-center p-6 bg-white rounded-lg shadow-lg egypt-theme">
+                <div class="civilization-icon egypt-icon mx-auto">🏺</div>
+                <h4 class="font-cinzel font-semibold text-lg">Egipto</h4>
+                <p class="text-sm text-gray-600 mt-2">3100 - 30 a.C.</p>
+                <p class="text-xs text-gray-500 mt-1">Faraones, pirámides y el Nilo</p>
+            </div>
+            <div class="text-center p-6 bg-white rounded-lg shadow-lg greece-theme">
+                <div class="civilization-icon greece-icon mx-auto">🏛️</div>
+                <h4 class="font-cinzel font-semibold text-lg">Grecia</h4>
+                <p class="text-sm text-gray-600 mt-2">800 - 146 a.C.</p>
+                <p class="text-xs text-gray-500 mt-1">Democracia, filosofía y arte</p>
+            </div>
+            <div class="text-center p-6 bg-white rounded-lg shadow-lg rome-theme">
+                <div class="civilization-icon rome-icon mx-auto">🦅</div>
+                <h4 class="font-cinzel font-semibold text-lg">Roma</h4>
+                <p class="text-sm text-gray-600 mt-2">753 a.C. - 476 d.C.</p>
+                <p class="text-xs text-gray-500 mt-1">República, imperio y legiones</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleCard(card) {
+        const expandedContent = card.querySelector('.expanded-content');
+        const isExpanded = !expandedContent.classList.contains('hidden');
+
+        // Close all other cards
+        document.querySelectorAll('.expanded-content').forEach(content => {
+            content.classList.add('hidden');
+        });
+        document.querySelectorAll('.timeline-card').forEach(c => {
+            c.classList.remove('expanded');
+        });
+
+        // Toggle current card
+        if (!isExpanded) {
+            expandedContent.classList.remove('hidden');
+            card.classList.add('expanded');
+
+            // Smooth scroll to card
+            card.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+    }
+
+    // Add entrance animations
+    window.addEventListener('load', function() {
+        const events = document.querySelectorAll('.timeline-event');
+        events.forEach((event, index) => {
+            event.style.opacity = '0';
+            event.style.transform = 'translateY(50px)';
+
+            setTimeout(() => {
+                event.style.transition = 'all 0.6s ease';
+                event.style.opacity = '1';
+                event.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+    });
+
+    // Add keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.expanded-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.querySelectorAll('.timeline-card').forEach(card => {
+                card.classList.remove('expanded');
+            });
+        }
+    });
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98335f0fb464c8bf',t:'MTc1ODU2MDU2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

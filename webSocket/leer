@@ -1,0 +1,10 @@
+tener composer instalado
+
+ PS C:\xampp\htdocs\cliente-servidor\WebSocket> composer --version
+
+tener la base de datos
+ejecutar
+cd WebSocket
+luego
+php chat-server.php
+

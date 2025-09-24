@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+    <title>Agregar Platillo</title>
+</head>
+<body>
+<h1>Agregar Platillo a Comanda</h1>
+
+<form action="prueba1.php" method="post">
+    <label>ID de la Comanda:
+        <input type="text" name="comandaId" required>
+    </label><br><br>
+
+    <label>Nombre del platillo:
+        <input type="text" name="nombre" required>
+    </label><br><br>
+
+    <label>Cantidad:
+        <input type="number" name="cantidad" value="1" required>
+    </label><br><br>
+
+    <button type="submit">Agregar platillo</button>
+</form>
+
+
+<pre id="resultado"></pre>
+
+<script>
+    document.getElementById('formulario').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const comandaId = document.getElementById('comandaId').value;
+        const nombre = document.getElementById('nombre').value;
+        const cantidad = parseInt(document.getElementById('cantidad').value, 10);
+
+        const item = { nombre, cantidad };
+
+        try {
+            const respuesta = await fetch(`http://localhost:3000/comandas/${comandaId}/item`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(item)
+            });
+
+            const datos = await respuesta.json();
+            document.getElementById('resultado').textContent = JSON.stringify(datos, null, 2);
+        } catch (error) {
+            document.getElementById('resultado').textContent = 'Error al enviar: ' + error.message;
+        }
+    });
+</script>
+</body>
+</html>

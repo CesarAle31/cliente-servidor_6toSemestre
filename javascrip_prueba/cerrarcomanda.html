@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cerrar Comanda</title>
+</head>
+<body>
+<h2>Cerrar Comanda</h2>
+<form action="cerrar_comanda.php" method="POST">
+    <label for="comandaId">ID de la Comanda:</label>
+    <input type="text" name="comandaId" id="comandaId" required>
+    <br><br>
+    <label for="total">Total a pagar:</label>
+    <input type="number" step="0.01" name="total" id="total" required>
+    <br><br>
+    <label for="forma_pago">Forma de pago:</label>
+    <select name="forma_pago" id="forma_pago" required>
+        <option value="efectivo">Efectivo</option>
+        <option value="tarjeta">Tarjeta</option>
+    </select>
+    <br><br>
+    <button type="submit">Cerrar Comanda</button>
+</form>
+</body>
+</html>

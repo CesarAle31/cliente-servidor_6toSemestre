@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+  <title>Crear Comanda</title>
+</head>
+<body>
+<h1>Crear Comanda</h1>
+<form action="crear_comanda.php" method="POST">
+  <label for="mesa">Mesa:</label>
+  <input type="text" name="mesa" id="mesa" required><br><br>
+  <label for="mesero">Mesero:</label>
+  <input type="text" name="mesero" id="mesero" required><br><br>
+  <label for="nombre_item">Nombre del Item:</label>
+  <input type="text" name="nombre_item[]" required>
+  <label for="cantidad">Cantidad:</label>
+  <input type="number" name="cantidad[]" min="1" value="1" required>
+  <button type="button" onclick="agregarItem()">Agregar otro item</button><br><br>
+  <div id="items"></div>
+  <button type="submit">Crear Comanda</button>
+</form>
+
+<script>
+  function agregarItem() {
+    var itemDiv = document.createElement('div');
+    itemDiv.innerHTML = `
+                <label>Nombre del Item:</label>
+                <input type="text" name="nombre_item[]" required>
+                <label>Cantidad:</label>
+                <input type="number" name="cantidad[]" min="1" value="1" required>
+                <button type="button" onclick="this.parentElement.remove();">Quitar</button>
+                <br>
+            `;
+    document.getElementById('items').appendChild(itemDiv);
+  }
+</script>
+</body>
+</html>

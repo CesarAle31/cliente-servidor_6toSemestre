@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input type="text" id="puerto" value="7080">
+<button id="conectar">Conectar</button>
+<p id="estado">Esperando conexión...</p>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Fecha</th>
+    </tr>
+    </thead>
+    <tbody id="tablaPedidos">
+    <!-- Aquí van los pedidos -->
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        function cargarPedidos() {
+            fetch('consultar_pedidos.php')
+                .then(res => res.json())
+                .then(pedidos => {
+                    const tbody = document.getElementById('tablaPedidos');
+                    tbody.innerHTML = '';
+                    pedidos.forEach(p => {
+                        const fila = document.createElement('tr');
+                        fila.innerHTML = `
+            <td>${p.id}</td>
+            <td>${p.producto}</td>
+            <td>${p.cantidad}</td>
+            <td>${p.fecha ?? ''}</td>
+          `;
+                        tbody.appendChild(fila);
+                    });
+                })
+                .catch(err => {
+                    console.error('Error al consultar pedidos:', err);
+                });
+        }
+
+        setInterval(cargarPedidos, 3000);
+        cargarPedidos();
+    });
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Usuarios</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Minimalista: sin Bootstrap, solo CSS personalizado -->
+    <style>
+        body {
+            background: #fff;
+            color: #222;
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: 40px auto;
+            border-radius: 12px;
+            padding: 36px 28px 24px 28px;
+            box-shadow: 0 2px 14px 0 rgba(60,60,80,0.08);
+            background: #fafbfc;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px 0;
+            margin-bottom: 18px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            background: #2563eb;
+            color: #fff;
+            border-radius: 7px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px 0 rgba(37,99,235,0.07);
+            transition: background 0.15s, box-shadow 0.12s;
+        }
+        .btn:last-child {
+            margin-bottom: 0;
+        }
+        .btn:hover, .btn:focus {
+            background: #1742a4;
+            box-shadow: 0 3px 8px 0 rgba(37,99,235,0.10);
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                max-width: 96vw;
+                padding: 18px 6vw 10px 6vw;
+            }
+            .btn {
+                font-size: 0.97rem;
+                padding: 11px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <form action="crear.html">
+        <div class="form-group">
+            <button type="submit" class="btn">Crear usuario</button>
+        </div>
+    </form>
+    <form action="listaUsuarios.html">
+        <div class="form-group">
+            <button type="submit" class="btn">Mostrar lista</button>
+        </div>
+    </form>
+    <form action="actualizar.html">
+        <div class="form-group">
+            <button type="submit" class="btn">Actualizar usuario</button>
+        </div>
+    </form>
+    <form action="eliminar.html">
+        <div class="form-group">
+            <button type="submit" class="btn">Eliminar</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
